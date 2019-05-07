@@ -1,0 +1,39 @@
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Http
+@using ToDo.Models
+
+@if (User.Identity.IsAuthenticated)
+{
+
+    // Access claim
+    string UserName_Claim = null;
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+    if (claimsIdentity != null)
+    {
+        ClaimsPrincipal principal = User as ClaimsPrincipal;
+        UserName_Claim = principal.Claims.Where(c => c.Type == ClaimTypes.GivenName).Select(c => c.Value).SingleOrDefault();
+    }
+
+
+    using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            @Html.ActionLink("Hello " + UserName_Claim + "      ", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+        </li>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+    </ul>
+    }
+}
+else
+{
+<ul class="nav navbar-nav navbar-right">
+    <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+    &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;
+    <li>@Html.ActionLink("Log In ", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+</ul>
+}
+
